@@ -28,11 +28,12 @@ async def PlayMusic(ctx, url : str):
         return
 
     # Get the corresponding voice channel the message author is associated with
-    voiceChannel = ctx.message.author.voice.channel
-    if voiceChannel is None:
+    if ctx.message.author.voice:
+        voiceChannel = ctx.message.author.voice.channel
+    else:
         await ctx.send("Please be in a voice channel when using this command")
         return
-        
+
     # Connect the bot to the voice channel
     await voiceChannel.connect()
     # Get the bots voice client
