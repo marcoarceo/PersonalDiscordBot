@@ -59,4 +59,40 @@ async def PlayMusic(ctx, url : str):
     # Play the audio through the bot
     voice.play(discord.FFmpegPCMAudio("song.mp3"))
 
+@bot.command(name='pause')
+async def PauseMusic(ctx):
+    # Get the bots voice client
+    voice = discord.utils.get(bot.voice_clients, guild=ctx.guild)
+    # Check to see if music is play, if yes, pause, if no, notify user
+    if voice.is_playing():
+        voice.pause()
+    else:
+        await ctx.send("The bot is not playing any audio")
+
+@bot.command(name='resume')
+async def ResumeMusic(ctx):
+    # Get the bots voice client
+    voice = discord.utils.get(bot.voice_clients, guild=ctx.guild)
+    # Check to see if music is paused, if yes, resume, if no, notify user
+    if voice.is_paused():
+        voice.resume()
+    else:
+        await ctx.send("The bot audio is not paused")
+
+@bot.command(name='stop')
+async def StopMusic(ctx):
+    # Get the bots voice client
+    voice = discord.utils.get(bot.voice_clients, guild=ctx.guild)
+    voice.stop()
+
+@bot.command(name='leave')
+async def LeaveVoice(ctx):
+    # Get the bots voice client
+    voice = discord.utils.get(bot.voice_clients, guild=ctx.guild)
+    # Check to see if the bot is connected, if yes, disconnect, if no, notify user
+    if voice.is_connected():
+        await voice.disconnect()
+    else:
+        await ctx.send("The bot is not in a voice channel")
+
 bot.run(config('TOKEN'))
