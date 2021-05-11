@@ -18,7 +18,8 @@ def CheckStatus(browser):
             WebDriverWait(browser, 5).until(EC.presence_of_element_located((By.XPATH, "//div[contains(@class, 'channel-status-info channel-status-info--offline tw-border-radius-medium tw-inline-block')]")))
             print("The user is offline")
         except TimeoutException as ex:
-            print ("The user is live")
+            time = WebDriverWait(browser, 5).until(EC.presence_of_element_located((By.XPATH, "//span[contains(@class, 'live-time')]")))
+            print ("The user is live " + time.text)
     except TimeoutException as ex:
         print("The user is offline")
 
