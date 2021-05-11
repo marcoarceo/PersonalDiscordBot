@@ -2,6 +2,7 @@ import discord
 import os
 import random
 import youtube_dl
+from streamScript import TwitchMain
 
 from decouple import config
 from discord.ext import commands
@@ -11,6 +12,7 @@ bot = commands.Bot(command_prefix='$')
 @bot.event
 async def on_ready():
     print("{0.user.name}".format(bot) + " has been activated")
+    bot.loop.create_task(TwitchMain(bot))
 
 @bot.command(name='hello')
 async def SayHello(ctx):

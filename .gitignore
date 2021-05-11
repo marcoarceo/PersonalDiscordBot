@@ -3,3 +3,6 @@
 
 # Ignore the mp3 file
 song.mp3
+
+# Ignore the cache
+__pycache__
