@@ -9,6 +9,17 @@ from discord.ext import commands
 
 bot = commands.Bot(command_prefix='$')
 
+import mysql.connector
+
+mydb = mysql.connector.connect(
+    host="localhost",
+    user="root",
+    passwd=config('DBPASS'),
+    database="DiscordBotDB"
+)
+
+mycursor = mydb.cursor()
+
 @bot.event
 async def on_ready():
     print("{0.user.name}".format(bot) + " has been activated")
@@ -17,6 +28,17 @@ async def on_ready():
 @bot.command(name='hello')
 async def SayHello(ctx):
     await ctx.send("Hello {}".format(ctx.message.author.mention))
+
+@bot.command(name='addstream')
+async def AddStreamURL(ctx, url : str):
+    try:
+        sqlFormula = "INSERT INTO twitchurls (url) VALUES (%s)"
+        urlStr = (url, )
+        mycursor.execute(sqlFormula, urlStr)
+        mydb.commit()
+        await ctx.send("Stream has been added to the notification list")
+    except mysql.connector.IntegrityError:
+        await ctx.send("Stream already exists in the notification list")
 
 @bot.command(name='play')
 async def PlayMusic(ctx, url : str):

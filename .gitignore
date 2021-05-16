@@ -6,3 +6,6 @@ song.mp3
 
 # Ignore the cache
 __pycache__
+
+# Ignore geckodriver.log
+geckodriver.log

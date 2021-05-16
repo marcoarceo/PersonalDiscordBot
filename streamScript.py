@@ -10,7 +10,7 @@ from selenium.webdriver.common.by import By
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support.wait import WebDriverWait
-from selenium.webdriver.edge.options import Options
+from selenium.webdriver.firefox.options import Options as FirefoxOptions
 
 async def UrlLoop(browser, urls, bot):
     for url in urls:
@@ -45,11 +45,11 @@ async def TwitchMain(bot):
     # Need to extract all of the urls from the database into a list
     urls = ['https://www.twitch.tv/wonderzv', 'https://www.twitch.tv/xqcow', 'https://www.twitch.tv/asunaweeb', 'https://www.twitch.tv/grimm', 'https://www.twitch.tv/timthetatman', 'https://www.twitch.tv/shroud']
 
-    # Instantiate the webdriver with the executable location of MS Edge
-    browser = webdriver.Edge(r"C:\Program Files\Python37\msedgedriver.exe")
+    options = FirefoxOptions()
+    options.add_argument("--headless")
 
-    # Simply just open a new Edge browser and go to the url specified above
-    browser.maximize_window()
+    # Instantiate the webdriver with the executable location of MS Edge
+    browser = webdriver.Firefox(executable_path=r'C:\Users\Marco PC\Desktop\Projects\geckodriver.exe', options=options)
 
     while True:
         await UrlLoop(browser, urls, bot)
