@@ -40,6 +40,17 @@ async def AddStreamURL(ctx, url : str):
     except mysql.connector.IntegrityError:
         await ctx.send("Stream already exists in the notification list")
 
+@bot.command(name='removestream')
+async def RemoveStreamURL(ctx, url : str):
+    try:
+        sqlFormula = "DELETE FROM twitchurls WHERE url = (%s)"
+        urlStr = (url, )
+        mycursor.execute(sqlFormula, urlStr)
+        mydb.commit()
+        await ctx.send("Stream has been removed from the notification list")
+    except mysql.connector.IntegrityError:
+        await ctx.send("Stream does not exist in the notification list")
+
 @bot.command(name='play')
 async def PlayMusic(ctx, url : str):
     # Check if there is already a song being played or stored
