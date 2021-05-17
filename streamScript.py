@@ -28,7 +28,7 @@ async def UrlLoop(browser, urls, bot):
     for url in urls:
         browser.get(url)
         await CheckStatus(browser, url, bot)
-    await asyncio.sleep(60)
+    await asyncio.sleep(600)
 
 async def CheckStatus(browser, url, bot):
     try: 
