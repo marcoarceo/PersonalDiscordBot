@@ -7,8 +7,6 @@ from streamScript import TwitchMain
 from decouple import config
 from discord.ext import commands
 
-bot = commands.Bot(command_prefix='$')
-
 import mysql.connector
 
 mydb = mysql.connector.connect(
@@ -19,6 +17,8 @@ mydb = mysql.connector.connect(
 )
 
 mycursor = mydb.cursor()
+
+bot = commands.Bot(command_prefix='$')
 
 @bot.event
 async def on_ready():

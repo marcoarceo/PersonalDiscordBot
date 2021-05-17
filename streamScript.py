@@ -3,6 +3,7 @@ import os
 import schedule
 import asyncio
 
+from decouple import config
 from selenium import webdriver
 from time import sleep
 from selenium.webdriver.support import expected_conditions as EC
@@ -12,24 +13,35 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.firefox.options import Options as FirefoxOptions
 
+import mysql.connector
+
+mydb = mysql.connector.connect(
+    host="localhost",
+    user="root",
+    passwd=config('DBPASS'),
+    database="DiscordBotDB"
+)
+
+mycursor = mydb.cursor()
+
 async def UrlLoop(browser, urls, bot):
     for url in urls:
         browser.get(url)
         await CheckStatus(browser, url, bot)
-    await asyncio.sleep(600)
+    await asyncio.sleep(60)
 
 async def CheckStatus(browser, url, bot):
     try: 
-        WebDriverWait(browser, 5).until(EC.presence_of_element_located((By.XPATH, "//div[contains(@class, 'live-indicator-container tw-border-radius-large tw-inline')]")))
+        WebDriverWait(browser, 5).until(EC.presence_of_element_located((By.XPATH, "//div[contains(@class, 'sc-AxjAm dZHTyF live-indicator-container')]")))
         try: 
-            WebDriverWait(browser, 5).until(EC.presence_of_element_located((By.XPATH, "//div[contains(@class, 'channel-status-info channel-status-info--offline tw-border-radius-medium tw-inline-block')]")))
-            print("The user is offline")
+            WebDriverWait(browser, 5).until(EC.presence_of_element_located((By.XPATH, "//div[contains(@class, 'sc-AxjAm idVdfv channel-status-info channel-status-info--offline')]")))
+            print(url + " is offline (False Positive)")
         except TimeoutException as ex:
             time = WebDriverWait(browser, 5).until(EC.presence_of_element_located((By.XPATH, "//span[contains(@class, 'live-time')]")))
-            print ("The user is live " + time.text)
+            print (url + " is live " + time.text)
             await AvoidDuplicateNoti(time, url, bot)
     except TimeoutException as ex:
-        print("The user is offline")
+        print(url + " is offline (Positive False)")
 
 async def AvoidDuplicateNoti(time, url, bot):
     stringTime = (time.text).split(':')
@@ -42,8 +54,6 @@ async def AvoidDuplicateNoti(time, url, bot):
 
 async def TwitchMain(bot):
     await bot.wait_until_ready()
-    # Need to extract all of the urls from the database into a list
-    urls = ['https://www.twitch.tv/wonderzv', 'https://www.twitch.tv/xqcow', 'https://www.twitch.tv/asunaweeb', 'https://www.twitch.tv/grimm', 'https://www.twitch.tv/timthetatman', 'https://www.twitch.tv/shroud']
 
     options = FirefoxOptions()
     options.add_argument("--headless")
@@ -52,5 +62,13 @@ async def TwitchMain(bot):
     browser = webdriver.Firefox(executable_path=r'C:\Users\Marco PC\Desktop\Projects\geckodriver.exe', options=options)
 
     while True:
-        await UrlLoop(browser, urls, bot)
+        await FetchUrls(browser, bot)
 
+async def FetchUrls(browser, bot):
+    urls = []
+    mycursor.execute("SELECT * FROM twitchurls")
+    result = mycursor.fetchall()
+    for x in result:
+        urls.append(x[0])
+    mydb.commit()
+    await UrlLoop(browser, urls, bot)
